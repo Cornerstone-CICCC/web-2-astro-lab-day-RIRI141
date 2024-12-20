@@ -1,0 +1,28 @@
+---
+// import { Markdown } from "astro/components";
+import Layout from "../../layouts/Layout.astro";
+import { getCollection } from "astro:content";
+
+const pageTitle = "Projects";
+
+export async function getStaticPaths() {
+  const pros = await getCollection("projects");
+  return pros.map((pro) => ({
+    params: { id: pro.id },
+  }));
+}
+
+const { params } = Astro;
+const pros = await getCollection("projects");
+const project = pros.find((pro) => pro.id === params.id);
+
+if (!project) {
+  throw new Error(`Project not found: ${params.id}`);
+}
+---
+
+<Layout title={pageTitle}>
+  <h1>{project.data.title}</h1>
+  <p>Written By: {project.data.author}</p>
+  <article set:html={project.rendered?.html} />
+</Layout>
